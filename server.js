@@ -11,11 +11,9 @@ const URL =
   "https://ffs.india-water.gov.in/iam/api/new-entry-data-aggregate/specification/?specification=%7B%22where%22:%7B%22expression%22:%7B%22valueIsRelationField%22:false,%22fieldName%22:%22id.datatypeCode%22,%22operator%22:%22eq%22,%22value%22:%22HHS%22%7D%7D,%22and%22:%7B%22expression%22:%7B%22valueIsRelationField%22:false,%22fieldName%22:%22stationCode.floodForecastStaticStationCode.type%22,%22operator%22:%22eq%22,%22value%22:%22Level%22%7D%7D%7D";
 
 const DATA_FILE = "./data.json";
-
-// Station codes to track
 const TARGET_STATION_CODES = ["017-LGDHYD", "028-LGDHYD"];
 
-// Reading stored data
+// Read saved data
 function readData() {
   try {
     if (fs.existsSync(DATA_FILE)) {
@@ -23,17 +21,17 @@ function readData() {
       return JSON.parse(rawData);
     }
   } catch (err) {
-    console.log("Error reading stored data", err.message);
+    console.log("Error reading stored data:", err.message);
   }
   return null;
 }
 
-// Saving the latest filtered data
+// Save filtered data
 function saveCurrentData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
-// Fetch and save water level data
+// Fetch from FFS and save
 async function fetchAndSaveWaterLevel() {
   try {
     const response = await axios.get(URL);
@@ -80,9 +78,8 @@ async function fetchAndSaveWaterLevel() {
   }
 }
 
-// API endpoint
-app.get("/api/floodReading", async (req, res) => {
-  await fetchAndSaveWaterLevel();
+// Serve the latest saved data only (no fetch here)
+app.get("/api/floodReading", (req, res) => {
   const data = readData();
   if (data) {
     res.json(data);
@@ -91,7 +88,7 @@ app.get("/api/floodReading", async (req, res) => {
   }
 });
 
-// Schedule to run at start of every hour
+// Hourly scheduling
 function scheduleHourlyAtExactTime() {
   const now = new Date();
   const nextHour = new Date(now);
@@ -99,17 +96,17 @@ function scheduleHourlyAtExactTime() {
   nextHour.setHours(now.getHours() + 1);
 
   const delay = nextHour - now;
-
   console.log(`Next fetch scheduled in ${Math.round(delay / 1000)} seconds`);
 
   setTimeout(() => {
     fetchAndSaveWaterLevel();
-    setInterval(fetchAndSaveWaterLevel, 60 * 60 * 1000); // every 1 hour
+    setInterval(fetchAndSaveWaterLevel, 60 * 60 * 1000); // every hour
   }, delay);
 }
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
-  //   scheduleHourlyAtExactTime();
+  fetchAndSaveWaterLevel(); // Fetch immediately on start
+  scheduleHourlyAtExactTime();
 });
