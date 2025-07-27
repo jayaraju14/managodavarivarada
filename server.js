@@ -106,9 +106,9 @@ function scheduleHourlyAtExactTime() {
 
   setTimeout(() => {
     fetchAndSaveWaterLevel(); // Run exactly at the top of the hour
-    console.log("⏰ Top-of-hour fetch triggered.");
+    // console.log("⏰ Top-of-hour fetch triggered.");
     setInterval(fetchAndSaveWaterLevel, 60 * 60 * 1000); // Every hour
-    console.log("🔁 Hourly interval set.");
+    // console.log("🔁 Hourly interval set.");
   }, delay);
 }
 
