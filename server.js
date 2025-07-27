@@ -48,7 +48,7 @@ async function fetchAndSaveWaterLevel() {
           stationName = "Bhadrachalam";
         } else if (item.stationCode === "028-LGDHYD") {
           referenceLevel = 10.67;
-          stationName = "Dawaleswaram";
+          stationName = "Dowleswaram";
         }
 
         const diff = item.latestDataValue - referenceLevel;
@@ -89,7 +89,13 @@ app.get("/api/floodReading", (req, res) => {
 });
 
 // Hourly scheduling
+//  Correct version of scheduler
+let isSchedulerInitialized = false;
+
 function scheduleHourlyAtExactTime() {
+  if (isSchedulerInitialized) return;
+  isSchedulerInitialized = true;
+
   const now = new Date();
   const nextHour = new Date(now);
   nextHour.setMinutes(0, 0, 0);
@@ -99,14 +105,17 @@ function scheduleHourlyAtExactTime() {
   console.log(`Next fetch scheduled in ${Math.round(delay / 1000)} seconds`);
 
   setTimeout(() => {
-    fetchAndSaveWaterLevel();
-    setInterval(fetchAndSaveWaterLevel, 60 * 60 * 1000); // every hour
+    fetchAndSaveWaterLevel(); // Run exactly at the top of the hour
+    console.log("⏰ Top-of-hour fetch triggered.");
+    setInterval(fetchAndSaveWaterLevel, 60 * 60 * 1000); // Every hour
+    console.log("🔁 Hourly interval set.");
   }, delay);
 }
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  console.log("test");
   fetchAndSaveWaterLevel(); // Fetch immediately on start
   scheduleHourlyAtExactTime();
 });

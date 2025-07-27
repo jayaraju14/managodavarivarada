@@ -1,19 +1,19 @@
 {
-  "timestamp": "2025-07-26T17:34:46.373Z",
+  "timestamp": "2025-07-27T08:40:37.784Z",
   "stations": [
     {
       "stationCode": "028-LGDHYD",
-      "stationName": "Dawaleswaram",
-      "time": "2025-07-26T18:00:00",
-      "value_m": 13.96,
-      "value_ft": 10.79
+      "stationName": "Dowleswaram",
+      "time": "2025-07-27T10:00:00",
+      "value_m": 13.99,
+      "value_ft": 10.89
     },
     {
       "stationCode": "017-LGDHYD",
       "stationName": "Bhadrachalam",
-      "time": "2025-07-26T22:00:00",
-      "value_m": 43.39,
-      "value_ft": 35.4
+      "time": "2025-07-27T05:00:00",
+      "value_m": 43.44,
+      "value_ft": 35.56
     }
   ]
 }
